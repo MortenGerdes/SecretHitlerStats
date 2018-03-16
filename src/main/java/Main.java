@@ -61,8 +61,8 @@ public class Main
         put("/adduser", (req, res) ->
         {
             String steamID, playerName = "Unnamed";
-            steamID = req.params("SteamID");
-            playerName = req.params("PlayerName");
+            steamID = req.queryParams("SteamID");
+            playerName = req.queryParams("PlayerName");
             System.out.println("SteamID = " + steamID + " and PlayerName = " + playerName);
             System.out.println("request Body = " + req.body());
             System.out.println("SteamID = " + req.attribute("SteamID") + " and PlayerName = " + req.attribute("PlayerName"));
