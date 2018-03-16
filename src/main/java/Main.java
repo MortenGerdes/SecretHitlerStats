@@ -63,17 +63,12 @@ public class Main
             String steamID, playerName = "Unnamed";
             steamID = req.queryParams("SteamID");
             playerName = req.queryParams("PlayerName");
-            System.out.println("SteamID = " + steamID + " and PlayerName = " + playerName);
-            System.out.println("request Body = " + req.body());
-            System.out.println("SteamID = " + req.attribute("SteamID") + " and PlayerName = " + req.attribute("PlayerName"));
-            System.out.println("response Body = " + res.body());
             if(steamID == null || steamID == "")
             {
                 res.status(400); // Bad request
             }
             else
             {
-                /*
                 if(insertUser(Long.getLong(steamID), playerName))
                 {
                     res.status(201); // User added
@@ -82,7 +77,6 @@ public class Main
                 {
                     res.status(409); // Conflict, user might exist
                 }
-                */
             }
             return res;
         });
