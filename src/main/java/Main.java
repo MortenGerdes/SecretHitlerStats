@@ -69,7 +69,7 @@ public class Main
             }
             else
             {
-                if(insertUser(Long.getLong(steamID), playerName))
+                if(insertUser(Long.parseLong(steamID), playerName))
                 {
                     res.status(201); // User added
                 }
