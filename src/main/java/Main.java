@@ -22,7 +22,7 @@ public class Main
         port(1337);
         Main main = new Main();
 
-        //main.setupConnectionPool();
+        main.setupConnectionPool();
         main.registerGetRoutes();
         main.registerPostRoutes();
     }
@@ -37,15 +37,15 @@ public class Main
         get("/testinsert", (req, res) ->
         {
             Map<String, Object> map = new HashMap<String, Object>();
-//            if(testInsert())
-//            {
-//                map.put("message", "Added Morten G to the database, yay");
-//            }
-//            else
-//            {
-//                map.put("message", "Failed to add Morten G to Database :(");
-//            }
-            map.put("message", "Yay, server works");
+            if(testInsert())
+            {
+                map.put("message", "Added Morten G to the database, yay");
+            }
+            else
+            {
+                map.put("message", "Failed to add Morten G to Database :(");
+            }
+            // map.put("message", "Yay, server works");
             return new ModelAndView(map, "register.ftl");
         }, fme);
     }
