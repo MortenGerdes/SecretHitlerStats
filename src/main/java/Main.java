@@ -67,6 +67,7 @@ public class Main
             if(steamID == null || steamID == "")
             {
                 res.status(400); // Bad request
+                System.out.println("SteamID = " + steamID + " and PlayerName = " + playerName);
             }
             else
             {
