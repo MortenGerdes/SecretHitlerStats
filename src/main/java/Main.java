@@ -23,7 +23,7 @@ public class Main
         Main main = new Main();
 
         //main.setupConnectionPool();
-        //main.registerGetRoutes();
+        main.registerGetRoutes();
         main.registerPostRoutes();
     }
 
