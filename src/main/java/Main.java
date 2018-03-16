@@ -1,3 +1,5 @@
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 import spark.ModelAndView;
@@ -9,8 +11,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static spark.Spark.get;
-import static spark.Spark.port;
+import static spark.Spark.*;
 
 public class Main
 {
@@ -25,6 +26,7 @@ public class Main
         main.setupConnectionPool();
         main.registerGetRoutes();
         main.registerPostRoutes();
+        main.registerPutRoutes();
     }
 
     public Main()
@@ -34,25 +36,63 @@ public class Main
 
     public void registerGetRoutes()
     {
-        get("/testinsert", (req, res) ->
+        get("/", (req, res) ->
         {
             Map<String, Object> map = new HashMap<String, Object>();
-            if(testInsert())
-            {
-                map.put("message", "Added Morten G to the database, yay");
-            }
-            else
-            {
-                map.put("message", "Failed to add Morten G to Database :(");
-            }
-            // map.put("message", "Yay, server works");
+            map.put("message", "Welcome to Morten G's web application.");
             return new ModelAndView(map, "register.ftl");
         }, fme);
+
+        get("/test", (req, res) ->
+        {
+            return test();
+        });
     }
 
     public void registerPostRoutes()
     {
 
+    }
+
+    public void registerPutRoutes()
+    {
+        //201 created
+        //400 bad request
+        put("/adduser", (req, res) ->
+        {
+            String steamID, playerName = "Unnamed";
+            steamID = req.params("SteamID");
+            playerName = req.params("PlayerName");
+
+            if(steamID == null || steamID == "")
+            {
+                res.status(400); // Bad request
+            }
+            else
+            {
+                /*
+                if(insertUser(Long.getLong(steamID), playerName))
+                {
+                    res.status(201); // User added
+                }
+                else
+                {
+                    res.status(409); // Conflict, user might exist
+                }
+                */
+                System.out.println("SteamID = " + steamID + " and PlayerName = " + playerName);
+            }
+            return res;
+        });
+    }
+
+    public String test()
+    {
+        Gson gson = new Gson();
+        JsonObject jo = new JsonObject();
+        jo.addProperty("SteamID", "76561198014861477");
+        jo.addProperty("PlayerName", "Morten G");
+        return gson.toJson(jo);
     }
 
     private void setupConnectionPool()
@@ -69,15 +109,15 @@ public class Main
         }
     }
 
-    private boolean testInsert()
+    private boolean insertUser(long steamID, String name)
     {
         int rowsAffected = 0;
         String query = "INSERT INTO Players (SteamID, PlayerName) VALUES (?, ?)";
         try {
             Connection conn = connectionPool.getConnection();
             PreparedStatement ps = conn.prepareStatement(query);
-            ps.setLong(1, 76561198014861477L);
-            ps.setString(2, "Morten G");
+            ps.setLong(1, steamID);
+            ps.setString(2, name);
             rowsAffected = ps.executeUpdate();
             conn.close();
         } catch (SQLException e) {
