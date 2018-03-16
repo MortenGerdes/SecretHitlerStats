@@ -19,7 +19,7 @@ public class Main
 
     public static void main(String[] args)
     {
-        port(80);
+        port(1337);
         Main main = new Main();
 
         //main.setupConnectionPool();
