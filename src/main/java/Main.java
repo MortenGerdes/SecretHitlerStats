@@ -78,6 +78,13 @@ public class Main
                 res.body("<p>Invalid roleType. 0 = lib, 1 = fasc</p>");
             }
 
+            if(theDate == null)
+            {
+                java.util.Date utilDate = new java.util.Date();
+                java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+                theDate = sqlDate.toString();
+            }
+
             if(insertStat(
                     Long.parseLong(steamID), Long.parseLong(hostSteamID), Integer.parseInt(roleType),
                     Boolean.parseBoolean(didWin), Date.valueOf(theDate), Integer.parseInt(amountOfPlayers),
