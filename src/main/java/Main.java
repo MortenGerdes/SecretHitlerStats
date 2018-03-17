@@ -75,7 +75,7 @@ public class Main
             if(Integer.parseInt(roleType) > 1)
             {
                 res.status(400);
-                res.body("<p>Invalid roleType. 0 = lib, 1 = fasc</p>");
+                res.body("<p>Invalid roleType. 0 = lib, 1 = fasc, 2 = hitler</p>");
             }
 
             if(theDate == null)
@@ -125,7 +125,7 @@ public class Main
     {
         //201 created
         //400 bad request
-        put("/adduser", (req, res) ->
+        post("/adduser", (req, res) ->
         {
             String steamID, playerName = "Unnamed";
             steamID = req.queryParams("SteamID");
