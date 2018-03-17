@@ -52,8 +52,35 @@ public class Main
 
     public void registerPostRoutes()
     {
+        //201 created
+        //400 bad request
+        post("/adduser", (req, res) ->
+        {
+            System.out.println("Detected a AddUser call");
+            String steamID, playerName = "Unnamed";
+            steamID = req.queryParams("SteamID");
+            playerName = req.queryParams("PlayerName");
+            if(steamID == null || steamID == "")
+            {
+                res.status(400); // Bad request
+            }
+            else
+            {
+                if(insertUser(Long.parseLong(steamID), playerName))
+                {
+                    res.status(201); // User added
+                }
+                else
+                {
+                    res.status(409); // Conflict, user might exist
+                }
+            }
+            return res;
+        });
+
         post("/registerstats", (req, res) ->
         {
+            System.out.println("Detected a RegisterStat call");
             String steamID, hostSteamID, roleType, didWin, theDate, amountOfPlayers, withAbilities, amountLibsPlayed, amountFascPlayed;
 
             steamID = req.queryParams("SteamID");
@@ -123,30 +150,7 @@ public class Main
 
     public void registerPutRoutes()
     {
-        //201 created
-        //400 bad request
-        post("/adduser", (req, res) ->
-        {
-            String steamID, playerName = "Unnamed";
-            steamID = req.queryParams("SteamID");
-            playerName = req.queryParams("PlayerName");
-            if(steamID == null || steamID == "")
-            {
-                res.status(400); // Bad request
-            }
-            else
-            {
-                if(insertUser(Long.parseLong(steamID), playerName))
-                {
-                    res.status(201); // User added
-                }
-                else
-                {
-                    res.status(409); // Conflict, user might exist
-                }
-            }
-            return res;
-        });
+
     }
 
     public String test()
@@ -172,19 +176,23 @@ public class Main
         }
     }
 
-    private boolean insertUser(long steamID, String name)
-    {
+    private boolean insertUser(long steamID, String name) throws SQLException {
+        Connection conn = null;
         int rowsAffected = 0;
         String query = "INSERT INTO Players (SteamID, PlayerName) VALUES (?, ?)";
         try {
-            Connection conn = connectionPool.getConnection();
+            conn = connectionPool.getConnection();
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setLong(1, steamID);
             ps.setString(2, name);
             rowsAffected = ps.executeUpdate();
             conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException e)
+        {
+            if(conn != null)
+            {
+                conn.close();
+            }
         }
         return (rowsAffected == 1);
     }
