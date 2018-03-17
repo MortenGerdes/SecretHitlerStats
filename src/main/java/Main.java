@@ -93,7 +93,10 @@ public class Main
             amountLibsPlayed = req.queryParams("AmountLibsPlayed");
             amountFascPlayed = req.queryParams("AmountLibsPlayed");
 
-            System.out.println(req.queryParams().toArray().toString());
+            for(String line: req.queryParams())
+            {
+                System.out.println(line);
+            }
             if(steamID == null || hostSteamID == null || roleType == null || didWin == null)
             {
                 res.status(400);
