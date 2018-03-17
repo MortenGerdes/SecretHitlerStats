@@ -56,10 +56,11 @@ public class Main
         //400 bad request
         post("/adduser", (req, res) ->
         {
-            System.out.println("Detected a AddUser call");
             String steamID, playerName = "Unnamed";
             steamID = req.queryParams("SteamID");
             playerName = req.queryParams("PlayerName");
+
+            System.out.println("Detected a AddUser call with user = " + playerName);
             if(steamID == null || steamID == "")
             {
                 res.status(400); // Bad request
@@ -80,7 +81,6 @@ public class Main
 
         post("/registerstats", (req, res) ->
         {
-            System.out.println("Detected a RegisterStat call");
             String steamID, hostSteamID, roleType, didWin, theDate, amountOfPlayers, withAbilities, amountLibsPlayed, amountFascPlayed;
 
             steamID = req.queryParams("SteamID");
@@ -93,6 +93,7 @@ public class Main
             amountLibsPlayed = req.queryParams("AmountLibsPlayed");
             amountFascPlayed = req.queryParams("AmountLibsPlayed");
 
+            System.out.println(req.queryParams().toArray().toString());
             if(steamID == null || hostSteamID == null || roleType == null || didWin == null)
             {
                 res.status(400);
