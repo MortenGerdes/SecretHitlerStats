@@ -85,6 +85,26 @@ public class Main
                 theDate = sqlDate.toString();
             }
 
+            if(amountOfPlayers == null)
+            {
+                amountOfPlayers = "8";
+            }
+
+            if(withAbilities == null)
+            {
+                withAbilities = "0";
+            }
+
+            if(amountLibsPlayed == null)
+            {
+                amountLibsPlayed = "0";
+            }
+
+            if(amountFascPlayed == null)
+            {
+                amountFascPlayed = "0";
+            }
+
             if(insertStat(
                     Long.parseLong(steamID), Long.parseLong(hostSteamID), Integer.parseInt(roleType),
                     Boolean.parseBoolean(didWin), Date.valueOf(theDate), Integer.parseInt(amountOfPlayers),
