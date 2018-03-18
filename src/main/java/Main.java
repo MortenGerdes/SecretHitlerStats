@@ -93,18 +93,12 @@ public class Main
             withAbilities = req.queryParams("WithAbilities");
             amountLibsPlayed = req.queryParams("AmountLibsPlayed");
             amountFascPlayed = req.queryParams("AmountLibsPlayed");
-
-            for(String line: req.queryParams())
-            {
-                System.out.println(line);
-            }
+            System.out.println("Detected a RegisterStats call for userID = " + steamID);
             if(steamID == null || hostSteamID == null || roleType == null || didWin == null)
             {
                 res.status(400);
                 return res;
             }
-
-            System.out.println(steamID + " was a " + roleType + " and " + didWin + " the game.");
 
             if(Integer.parseInt(roleType) > 2)
             {
