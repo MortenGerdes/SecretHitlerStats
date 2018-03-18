@@ -103,10 +103,11 @@ public class Main
                 return res;
             }
 
-            if(Integer.parseInt(roleType) > 1)
+            if(Integer.parseInt(roleType) > 2)
             {
                 res.status(400);
                 res.body("<p>Invalid roleType. 0 = lib, 1 = fasc, 2 = hitler</p>");
+                return res;
             }
 
             if(theDate == null)
