@@ -81,7 +81,7 @@ public class Main
 
         post("/registerstats", (req, res) ->
         {
-            boolean bDidWin = false;
+            boolean bDidWin = false, bWithAbilities = false;
             String steamID, hostSteamID, roleType, didWin, theDate, amountOfPlayers, withAbilities, amountLibsPlayed, amountFascPlayed;
 
             steamID = req.queryParams("SteamID");
@@ -113,13 +113,22 @@ public class Main
                 return res;
             }
 
-            if(didWin == "1")
+            if(Integer.parseInt(didWin) == 1)
             {
                 bDidWin = true;
             }
-            else if(didWin == "0")
+            else if(Integer.parseInt(didWin) == 0)
             {
                 bDidWin = false;
+            }
+
+            if(Integer.parseInt(withAbilities) == 1)
+            {
+                bWithAbilities = true;
+            }
+            else if(Integer.parseInt(withAbilities) == 0)
+            {
+                bWithAbilities = false;
             }
 
             if(theDate == null)
