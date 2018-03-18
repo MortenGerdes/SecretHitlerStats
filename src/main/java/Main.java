@@ -161,7 +161,7 @@ public class Main
             if(insertStat(
                     Long.parseLong(steamID), Long.parseLong(hostSteamID), Integer.parseInt(roleType),
                     bDidWin, Date.valueOf(theDate), Integer.parseInt(amountOfPlayers),
-                    Boolean.parseBoolean(withAbilities), Integer.parseInt(amountLibsPlayed), Integer.parseInt(amountFascPlayed)))
+                    bWithAbilities, Integer.parseInt(amountLibsPlayed), Integer.parseInt(amountFascPlayed)))
             {
                 res.status(200);
             }
