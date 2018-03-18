@@ -81,6 +81,7 @@ public class Main
 
         post("/registerstats", (req, res) ->
         {
+            boolean bDidWin = false;
             String steamID, hostSteamID, roleType, didWin, theDate, amountOfPlayers, withAbilities, amountLibsPlayed, amountFascPlayed;
 
             steamID = req.queryParams("SteamID");
@@ -103,11 +104,22 @@ public class Main
                 return res;
             }
 
+            System.out.println(steamID + " was a " + roleType + " and " + didWin + " the game.");
+
             if(Integer.parseInt(roleType) > 2)
             {
                 res.status(400);
                 res.body("<p>Invalid roleType. 0 = lib, 1 = fasc, 2 = hitler</p>");
                 return res;
+            }
+
+            if(didWin == "1")
+            {
+                bDidWin = true;
+            }
+            else if(didWin == "0")
+            {
+                bDidWin = false;
             }
 
             if(theDate == null)
@@ -139,7 +151,7 @@ public class Main
 
             if(insertStat(
                     Long.parseLong(steamID), Long.parseLong(hostSteamID), Integer.parseInt(roleType),
-                    Boolean.parseBoolean(didWin), Date.valueOf(theDate), Integer.parseInt(amountOfPlayers),
+                    bDidWin, Date.valueOf(theDate), Integer.parseInt(amountOfPlayers),
                     Boolean.parseBoolean(withAbilities), Integer.parseInt(amountLibsPlayed), Integer.parseInt(amountFascPlayed)))
             {
                 res.status(200);
