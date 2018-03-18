@@ -113,6 +113,11 @@ public class Main
                 return res;
             }
 
+            if(withAbilities == null)
+            {
+                withAbilities = "0";
+            }
+
             if(Integer.parseInt(didWin) == 1)
             {
                 bDidWin = true;
@@ -143,11 +148,6 @@ public class Main
                 amountOfPlayers = "8";
             }
 
-            if(withAbilities == null)
-            {
-                withAbilities = "0";
-            }
-
             if(amountLibsPlayed == null)
             {
                 amountLibsPlayed = "0";
@@ -170,6 +170,17 @@ public class Main
                 res.status(400);
                 res.body("<p> Something went wrong when trying to add valeus into database. <br> make sure you parsed the values correctly</p>");
             }
+            return res;
+        });
+
+        post("/retrivestats", (req, res) ->
+        {
+            Map<String, String[]> map = req.queryMap().toMap();
+            for(String key: map.keySet())
+            {
+                System.out.println("key = " + key + " and value = " + map.get(key)[0]);
+            }
+            res.status(200);
             return res;
         });
     }
