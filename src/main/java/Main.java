@@ -288,7 +288,7 @@ public class Main
 
     private String generateQuery(Map<String, String[]> map)
     {
-        int loopIndex = 0;
+        int loopIndex = 1;
 
         StringBuilder sb = new StringBuilder();
         sb.append(
