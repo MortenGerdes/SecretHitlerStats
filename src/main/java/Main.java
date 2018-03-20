@@ -166,11 +166,12 @@ public class Main
 
         post("/retrivestats", (req, res) ->
         {
+            Gson gson = new Gson();
             Map<String, String[]> map = req.queryMap().toMap();
             if(validMap(map))
             {
                 res.status(200);
-                getUserStats(map);
+                return gson.toJson(getUserStats(map));
             }
             else
             {
