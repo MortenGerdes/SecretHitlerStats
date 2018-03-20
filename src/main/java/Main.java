@@ -1,5 +1,4 @@
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
@@ -167,12 +166,11 @@ public class Main
 
         post("/retrivestats", (req, res) ->
         {
-            Gson gson = new Gson();
             Map<String, String[]> map = req.queryMap().toMap();
             if(validMap(map))
             {
                 res.status(200);
-                return gson.toJson(getUserStats(map));
+                return getUserStats(map);
             }
             else
             {
@@ -257,13 +255,10 @@ public class Main
         return (rowsAffected == 1);
     }
 
-    private JsonArray getUserStats(Map<String, String[]> queryMap) {
+    private String getUserStats(Map<String, String[]> queryMap) {
         int index = 1;
-        JsonArray ja = new JsonArray();
-        JsonObject joToSend = new JsonObject();
+        Gson gson = new Gson();
         String query = generateQuery(queryMap);
-        HashMap<String, String[]> mapToSend = new HashMap<>();
-
         try(Connection conn = connectionPool.getConnection())
         {
             PreparedStatement ps = conn.prepareStatement(query);
@@ -273,23 +268,23 @@ public class Main
                 index++;
             }
             ResultSet rs = ps.executeQuery();
-
+            HashMap<Long, HashMap<String, Integer>> map = new HashMap<>();
             while(rs.next())
             {
-                JsonObject jo = new JsonObject();
-                jo.addProperty("SteamID", rs.getLong("SteamID"));
-                jo.addProperty("LibWins", rs.getInt("LibWins"));
-                jo.addProperty("FascWins", rs.getInt("FascWins"));
-                jo.addProperty("HitlerWins", rs.getInt("HitlerWins"));
-                jo.addProperty("TotalGames", rs.getInt("TotalGames"));
-                ja.addAll(jo.getAsJsonArray());
+                HashMap<String, Integer> innerMap = new HashMap<>();
+                innerMap.put("LibWins", rs.getInt("LibWins"));
+                innerMap.put("FascWins", rs.getInt("FascWins"));
+                innerMap.put("HitlerWins", rs.getInt("HitlerWins"));
+                innerMap.put("TotalGames", rs.getInt("TotalGames"));
+                map.put(rs.getLong("SteamID"), innerMap);
             }
+            return gson.toJson(map);
         }
         catch (SQLException e)
         {
             e.printStackTrace();
         }
-        return ja;
+        return "Something went wrong";
     }
 
     private boolean validMap(Map<String, String[]> map)
