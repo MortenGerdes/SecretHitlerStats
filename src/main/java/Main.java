@@ -272,8 +272,11 @@ public class Main
             while(rs.next())
             {
                 HashMap<String, Integer> innerMap = new HashMap<>();
+                innerMap.put("LibGames", rs.getInt("LibGames"));
                 innerMap.put("LibWins", rs.getInt("LibWins"));
+                innerMap.put("FascGames", rs.getInt("FascGames"));
                 innerMap.put("FascWins", rs.getInt("FascWins"));
+                innerMap.put("HitlerGames", rs.getInt("HitlerGames"));
                 innerMap.put("HitlerWins", rs.getInt("HitlerWins"));
                 innerMap.put("TotalGames", rs.getInt("TotalGames"));
                 map.put(rs.getLong("SteamID"), innerMap);
@@ -313,11 +316,16 @@ public class Main
 
         StringBuilder sb = new StringBuilder();
         sb.append(
+
+
                 "select g.SteamID,\n" +
-                "Count(case when RoleType = 0 and DidWin = 1 then 1 else null end) as LibWins,\n" +
-                "Count(case when RoleType = 1 and DidWin = 1 then 1 else null end) as FascWins,\n" +
-                "Count(case when RoleType = 2 and DidWin = 1 then 1 else null end) as HitlerWins,\n" +
-                "Count(*) as TotalGames\n" +
+                        "Count(case when RoleType = 0 then 1 else null end) as LibGames,\n" +
+                        "Count(case when RoleType = 0 and DidWin = 1 then 1 else null end) as LibWins,\n" +
+                        "Count(case when RoleType = 1 then 1 else null end) as FascGames,\n" +
+                        "Count(case when RoleType = 1 and DidWin = 1 then 1 else null end) as FascWins,\n" +
+                        "Count(case when RoleType = 2 then 1 else null end) as HitlerGames,\n" +
+                        "Count(case when RoleType = 2 and DidWin = 1 then 1 else null end) as HitlerWins,\n" +
+                        "Count(*) as TotalGames\n" +
                 "from Games as g where "
                 );
 
