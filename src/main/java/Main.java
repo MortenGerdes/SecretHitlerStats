@@ -274,12 +274,11 @@ public class Main
 
             while(rs.next())
             {
-                JsonObject jo = new JsonObject();
-                jo.addProperty("LibWins", rs.getInt("LibWins"));
-                jo.addProperty("FascWins", rs.getInt("FascWins"));
-                jo.addProperty("HitlerWins", rs.getInt("HitlerWins"));
-                jo.addProperty("TotalGames", "TotalGames");
-                joToSend.addProperty(rs.getString("SteamID"), jo.getAsString());
+                joToSend.addProperty("SteamID", rs.getLong("SteamID"));
+                joToSend.addProperty("LibWins", rs.getInt("LibWins"));
+                joToSend.addProperty("FascWins", rs.getInt("FascWins"));
+                joToSend.addProperty("HitlerWins", rs.getInt("HitlerWins"));
+                joToSend.addProperty("TotalGames", "TotalGames");
             }
         }
         catch (SQLException e)
