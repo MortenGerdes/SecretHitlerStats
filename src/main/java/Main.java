@@ -1,4 +1,5 @@
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
@@ -256,8 +257,9 @@ public class Main
         return (rowsAffected == 1);
     }
 
-    private JsonObject getUserStats(Map<String, String[]> queryMap) {
+    private JsonArray getUserStats(Map<String, String[]> queryMap) {
         int index = 1;
+        JsonArray ja = new JsonArray();
         JsonObject joToSend = new JsonObject();
         String query = generateQuery(queryMap);
         HashMap<String, String[]> mapToSend = new HashMap<>();
@@ -274,18 +276,20 @@ public class Main
 
             while(rs.next())
             {
-                joToSend.addProperty("SteamID", rs.getLong("SteamID"));
-                joToSend.addProperty("LibWins", rs.getInt("LibWins"));
-                joToSend.addProperty("FascWins", rs.getInt("FascWins"));
-                joToSend.addProperty("HitlerWins", rs.getInt("HitlerWins"));
-                joToSend.addProperty("TotalGames", "TotalGames");
+                JsonObject jo = new JsonObject();
+                jo.addProperty("SteamID", rs.getLong("SteamID"));
+                jo.addProperty("LibWins", rs.getInt("LibWins"));
+                jo.addProperty("FascWins", rs.getInt("FascWins"));
+                jo.addProperty("HitlerWins", rs.getInt("HitlerWins"));
+                jo.addProperty("TotalGames", rs.getInt("TotalGames"));
+                ja.addAll(jo.getAsJsonArray());
             }
         }
         catch (SQLException e)
         {
             e.printStackTrace();
         }
-        return joToSend;
+        return ja;
     }
 
     private boolean validMap(Map<String, String[]> map)
