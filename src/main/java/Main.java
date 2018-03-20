@@ -170,11 +170,16 @@ public class Main
         post("/retrivestats", (req, res) ->
         {
             Map<String, String[]> map = req.queryMap().toMap();
-            for(String key: map.keySet())
+            if(validMap(map))
             {
-                System.out.println("key = " + key + " and value = " + map.get(key)[0]);
+                res.status(200);
+                System.out.println(generateQuery(map));
             }
-            res.status(200);
+            else
+            {
+                res.status(400);
+                System.out.println("Invalid Map!");
+            }
             return res;
         });
     }
@@ -251,5 +256,61 @@ public class Main
             e.printStackTrace();
         }
         return (rowsAffected == 1);
+    }
+
+    private JsonObject getUserStats()
+    {
+        String query = "";
+        JsonObject jo = new JsonObject();
+
+
+        return jo;
+    }
+
+    private boolean validMap(Map<String, String[]> map)
+    {
+        for(String index: map.keySet())
+        {
+            try
+            {
+                if(Long.parseLong(map.get(index)[0]) != 0)
+                {
+                    continue;
+                }
+            }
+            catch (NumberFormatException e)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private String generateQuery(Map<String, String[]> map)
+    {
+        int loopIndex = 0;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(
+                "select g.SteamID,\n" +
+                "Count(case when RoleType = 0 and DidWin = 1 then 1 else null end) as LibWins,\n" +
+                "Count(case when RoleType = 1 and DidWin = 1 then 1 else null end) as FascWins,\n" +
+                "Count(case when RoleType = 2 and DidWin = 1 then 1 else null end) as HitlerWins,\n" +
+                "Count(*) as TotalGames\n" +
+                "from Games as g where "
+                );
+
+        for(String index: map.keySet())
+        {
+            sb.append("g.SteamID = ?");
+            if(loopIndex < map.keySet().size())
+            {
+                sb.append(" or ");
+            }
+            loopIndex++;
+        }
+        sb.append(" group by g.SteamID;");
+
+        return sb.toString();
     }
 }
