@@ -5,10 +5,7 @@ import com.jolbox.bonecp.BoneCPConfig;
 import spark.ModelAndView;
 import spark.template.freemarker.FreeMarkerEngine;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -173,7 +170,7 @@ public class Main
             if(validMap(map))
             {
                 res.status(200);
-                System.out.println(generateQuery(map));
+                getUserStats(map);
             }
             else
             {
@@ -233,12 +230,11 @@ public class Main
         return (rowsAffected == 1);
     }
 
-    private boolean insertStat(long steamID, long hostSteamID, int roleType, boolean didWin, Date theDate, int amountOfPlayers, boolean withAbilitites, int amountLibsPlayed, int amountFascPlayed)
-    {
+    private boolean insertStat(long steamID, long hostSteamID, int roleType, boolean didWin, Date theDate, int amountOfPlayers, boolean withAbilitites, int amountLibsPlayed, int amountFascPlayed) throws SQLException {
         int rowsAffected = 0;
         String query = "INSERT INTO Games (SteamID, HostSteamID, RoleType, DidWin, TheDate, AmountOfPlayers, WithAbilities, AmountLibsPlayed, AmountFascPlayed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try {
-            Connection conn = connectionPool.getConnection();
+        try(Connection conn = connectionPool.getConnection()) {
+
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setLong(1, steamID);
             ps.setLong(2, hostSteamID);
@@ -252,19 +248,44 @@ public class Main
 
             rowsAffected = ps.executeUpdate();
             conn.close();
-        } catch (SQLException e) {
+        } catch (SQLException e)
+        {
             e.printStackTrace();
         }
         return (rowsAffected == 1);
     }
 
-    private JsonObject getUserStats()
-    {
-        String query = "";
-        JsonObject jo = new JsonObject();
+    private JsonObject getUserStats(Map<String, String[]> queryMap) {
+        int index = 1;
+        JsonObject joToSend = new JsonObject();
+        String query = generateQuery(queryMap);
+        HashMap<String, String[]> mapToSend = new HashMap<>();
 
+        try(Connection conn = connectionPool.getConnection())
+        {
+            PreparedStatement ps = conn.prepareStatement(query);
+            for(String key: queryMap.keySet())
+            {
+                ps.setLong(index, Long.parseLong(queryMap.get(key)[0]));
+                index++;
+            }
+            ResultSet rs = ps.executeQuery();
 
-        return jo;
+            while(rs.next())
+            {
+                JsonObject jo = new JsonObject();
+                jo.addProperty("LibWins", rs.getInt("LibWins"));
+                jo.addProperty("FascWins", rs.getInt("FascWins"));
+                jo.addProperty("HitlerWins", rs.getInt("HitlerWins"));
+                jo.addProperty("TotalGames", "TotalGames");
+                joToSend.addProperty(rs.getString("SteamID"), jo.getAsString());
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return joToSend;
     }
 
     private boolean validMap(Map<String, String[]> map)
