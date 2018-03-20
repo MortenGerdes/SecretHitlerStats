@@ -164,7 +164,7 @@ public class Main
             return res;
         });
 
-        post("/retrivestats", (req, res) ->
+        post("/retrievestats", (req, res) ->
         {
             Map<String, String[]> map = req.queryMap().toMap();
             if(validMap(map))
@@ -278,6 +278,7 @@ public class Main
                 innerMap.put("TotalGames", rs.getInt("TotalGames"));
                 map.put(rs.getLong("SteamID"), innerMap);
             }
+            conn.close();
             return gson.toJson(map);
         }
         catch (SQLException e)
