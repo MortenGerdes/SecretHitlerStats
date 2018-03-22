@@ -318,7 +318,7 @@ public class Main
                         "Count(case when RoleType = 2 then 1 else null end) as HitlerGames,\n" +
                         "Count(case when RoleType = 2 and DidWin = 1 then 1 else null end) as HitlerWins,\n" +
                         "Count(*) as TotalGames\n" +
-                        "from Games as g where (g.HostSteamID = " + map.get("1")[0] + ") and ("
+                        "from Games as g where (g.HostSteamID = " + map.get("host")[0] + ") and ("
         );
 
         for(String index: map.keySet())
