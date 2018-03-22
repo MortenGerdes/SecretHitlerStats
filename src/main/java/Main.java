@@ -332,6 +332,7 @@ public class Main
         }
         sb.append(") group by g.SteamID;");
 
+        System.out.println(sb.toString());
         return sb.toString();
     }
 
