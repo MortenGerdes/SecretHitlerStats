@@ -13,6 +13,8 @@ import static spark.Spark.*;
 
 public class Main
 {
+    private int annID = 1;
+    private String annMessage;
     private BoneCP connectionPool;
     private FreeMarkerEngine fme;
 
@@ -41,14 +43,40 @@ public class Main
             return new ModelAndView(map, "register.ftl");
         }, fme);
 
-        get("/test", (req, res) ->
+        get("/am", (req, res) ->
         {
-            return test();
+            if(annMessage == "")
+            {
+                return "{}";
+            }
+            JsonObject jo = new JsonObject();
+            Gson gson = new Gson();
+            jo.addProperty("ID", annID);
+            jo.addProperty("Message", annMessage);
+            return gson.toJson(jo);
         });
     }
 
     public void registerPostRoutes()
     {
+        post("/setam", (req, res) ->
+        {
+            String id = req.queryParams("id");
+            String pass = req.queryParams("pass");
+            String message = req.queryParams("message");
+           if(!req.queryParams("pass").equals("MortenG"))
+           {
+               res.status(401);
+               res.body("Access Denied!");
+               return res;
+           }
+           annID = Integer.parseInt(id);
+           annMessage = message;
+           res.status(200);
+           res.body("Done");
+           return res;
+        });
+
         //201 created
         //400 bad request
         post("/adduser", (req, res) ->
