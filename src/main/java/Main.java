@@ -306,7 +306,7 @@ public class Main
 
     private String generateQueryWithHost(Map<String, String[]> map)
     {
-        int loopIndex = 0;
+        int loopIndex = 1;
 
         StringBuilder sb = new StringBuilder();
         sb.append(
@@ -332,7 +332,7 @@ public class Main
         }
         sb.append(") group by g.SteamID;");
 
-        System.out.println(sb.toString());
+        //System.out.println(sb.toString());
         return sb.toString();
     }
 
