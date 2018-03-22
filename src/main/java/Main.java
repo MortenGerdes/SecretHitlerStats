@@ -170,7 +170,23 @@ public class Main
             if(validMap(map))
             {
                 res.status(200);
-                return getUserStats(map);
+                return getUserStats(map, false);
+            }
+            else
+            {
+                res.status(400);
+                System.out.println("Invalid Map!");
+            }
+            return res;
+        });
+
+        post("/retrievehoststats", (req, res) ->
+        {
+            Map<String, String[]> map = req.queryMap().toMap();
+            if(validMap(map))
+            {
+                res.status(200);
+                return getUserStats(map, true);
             }
             else
             {
@@ -255,10 +271,82 @@ public class Main
         return (rowsAffected == 1);
     }
 
-    private String getUserStats(Map<String, String[]> queryMap) {
+    private String generateQuery(Map<String, String[]> map)
+    {
+        int loopIndex = 1;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(
+
+
+                "select g.SteamID,\n" +
+                        "Count(case when RoleType = 0 then 1 else null end) as LibGames,\n" +
+                        "Count(case when RoleType = 0 and DidWin = 1 then 1 else null end) as LibWins,\n" +
+                        "Count(case when RoleType = 1 then 1 else null end) as FascGames,\n" +
+                        "Count(case when RoleType = 1 and DidWin = 1 then 1 else null end) as FascWins,\n" +
+                        "Count(case when RoleType = 2 then 1 else null end) as HitlerGames,\n" +
+                        "Count(case when RoleType = 2 and DidWin = 1 then 1 else null end) as HitlerWins,\n" +
+                        "Count(*) as TotalGames\n" +
+                        "from Games as g where "
+        );
+
+        for(String index: map.keySet())
+        {
+            sb.append("g.SteamID = ?");
+            if(loopIndex < map.keySet().size())
+            {
+                sb.append(" or ");
+            }
+            loopIndex++;
+        }
+        sb.append(" group by g.SteamID;");
+
+        return sb.toString();
+    }
+
+    private String generateQueryWithHost(Map<String, String[]> map)
+    {
+        int loopIndex = 0;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(
+                        "select g.SteamID,\n" +
+                        "Count(case when RoleType = 0 then 1 else null end) as LibGames,\n" +
+                        "Count(case when RoleType = 0 and DidWin = 1 then 1 else null end) as LibWins,\n" +
+                        "Count(case when RoleType = 1 then 1 else null end) as FascGames,\n" +
+                        "Count(case when RoleType = 1 and DidWin = 1 then 1 else null end) as FascWins,\n" +
+                        "Count(case when RoleType = 2 then 1 else null end) as HitlerGames,\n" +
+                        "Count(case when RoleType = 2 and DidWin = 1 then 1 else null end) as HitlerWins,\n" +
+                        "Count(*) as TotalGames\n" +
+                        "from Games as g where (g.HostSteamID = " + map.get("1")[0] + " and ("
+        );
+
+        for(String index: map.keySet())
+        {
+            sb.append("g.SteamID = ?");
+            if(loopIndex < map.keySet().size())
+            {
+                sb.append(" or ");
+            }
+            loopIndex++;
+        }
+        sb.append(") group by g.SteamID;");
+
+        return sb.toString();
+    }
+
+    private String getUserStats(Map<String, String[]> queryMap, boolean hostSpecific) {
         int index = 1;
         Gson gson = new Gson();
-        String query = generateQuery(queryMap);
+        String query = "";
+        if(hostSpecific)
+        {
+            query = generateQueryWithHost(queryMap);
+        }
+        else
+        {
+           query = generateQuery(queryMap);
+        }
         try(Connection conn = connectionPool.getConnection())
         {
             PreparedStatement ps = conn.prepareStatement(query);
@@ -293,6 +381,16 @@ public class Main
 
     private boolean validMap(Map<String, String[]> map)
     {
+        if(map == null)
+        {
+            return false;
+        }
+
+        if(map.isEmpty())
+        {
+            return false;
+        }
+
         for(String index: map.keySet())
         {
             try
@@ -308,38 +406,5 @@ public class Main
             }
         }
         return true;
-    }
-
-    private String generateQuery(Map<String, String[]> map)
-    {
-        int loopIndex = 1;
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-
-
-                "select g.SteamID,\n" +
-                        "Count(case when RoleType = 0 then 1 else null end) as LibGames,\n" +
-                        "Count(case when RoleType = 0 and DidWin = 1 then 1 else null end) as LibWins,\n" +
-                        "Count(case when RoleType = 1 then 1 else null end) as FascGames,\n" +
-                        "Count(case when RoleType = 1 and DidWin = 1 then 1 else null end) as FascWins,\n" +
-                        "Count(case when RoleType = 2 then 1 else null end) as HitlerGames,\n" +
-                        "Count(case when RoleType = 2 and DidWin = 1 then 1 else null end) as HitlerWins,\n" +
-                        "Count(*) as TotalGames\n" +
-                "from Games as g where "
-                );
-
-        for(String index: map.keySet())
-        {
-            sb.append("g.SteamID = ?");
-            if(loopIndex < map.keySet().size())
-            {
-                sb.append(" or ");
-            }
-            loopIndex++;
-        }
-        sb.append(" group by g.SteamID;");
-
-        return sb.toString();
     }
 }
