@@ -14,7 +14,7 @@ import static spark.Spark.*;
 public class Main
 {
     private int annID = 1;
-    private String annMessage;
+    private String annMessage = "";
     private BoneCP connectionPool;
     private FreeMarkerEngine fme;
 
@@ -45,7 +45,7 @@ public class Main
 
         get("/am", (req, res) ->
         {
-            if(annMessage == "")
+            if(annMessage.equals(""))
             {
                 return "{}";
             }
@@ -68,13 +68,13 @@ public class Main
            {
                res.status(401);
                res.body("Access Denied!");
-               return res;
+               return res.body();
            }
            annID = Integer.parseInt(id);
            annMessage = message;
            res.status(200);
            res.body("Done");
-           return res;
+           return res.body();
         });
 
         //201 created
